@@ -6,7 +6,6 @@ const getUsers = () => {
         .then(response => response.json())
         .then(data => {
             let users = data.data
-            console.log(users)
             for (let i = 0; i < users.length; i++) {
                 content += `
                 <div class="col-12 col-md-6 col-xl-4 my-3" style="max-width: 540px;">
@@ -27,7 +26,7 @@ const getUsers = () => {
                                     data-bs-toggle="modal" data-bs-target="#updateUser">
                                         Editar
                                     </button>
-                                    <button type="button" class="btn btn-danger">Eliminar</button>
+                                    <button onclick="deleteUser(${users[i].id})" type="button" class="btn btn-danger">Eliminar</button>
                                 </div>
                             </div>
                         </div>
@@ -48,10 +47,10 @@ const addUser = () => {
         job: job
     }
 
-    if(name == "" || job == "") return Swal.fire({
+    if (name == "" || job == "") return Swal.fire({
         icon: 'error',
         title: 'Ambos campos son obligatorios'
-      })
+    })
 
     fetch(url, {
         method: 'POST',
@@ -60,17 +59,17 @@ const addUser = () => {
             'Content-Type': 'application/json'
         }
     }).then(response => response.json())
-    .then(data => {
-        btn.click()
-        Swal.fire({
-            icon: 'success',
-            title: 'Registro exitoso'
-          })
-    })
+        .then(data => {
+            btn.click()
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro exitoso'
+            })
+        })
 }
 
 const showUser = (id) => {
-    fetch(url + '/'+id)
+    fetch(url + '/' + id)
         .then(response => response.json())
         .then(data => {
             console.log(data)
@@ -83,12 +82,12 @@ const showUser = (id) => {
 }
 
 const getUser = (id) => {
-    fetch(url + '/'+id)
+    fetch(url + '/' + id)
         .then(response => response.json())
         .then(data => {
             console.log(data)
             let user = data.data
-            document.getElementById('nameM').value = user.first_name+" "+user.last_name;
+            document.getElementById('nameM').value = user.first_name + " " + user.last_name;
             document.getElementById('idM').value = user.id;
         });
 }
@@ -102,18 +101,43 @@ const updateUser = () => {
         name: name,
         job: job
     }
-    fetch(url+'/'+id, {
+    fetch(url + '/' + id, {
         method: 'PUT',
         body: JSON.stringify(user),
         headers: {
             'Content-Type': 'application/json'
         }
     }).then(response => response.json())
-    .then(data => {
-        btn.click()
-        Swal.fire({
-            icon: 'success',
-            title: 'Modificación exitosa'
-          })
+        .then(data => {
+            btn.click()
+            Swal.fire({
+                icon: 'success',
+                title: 'Modificación exitosa'
+            })
+        })
+}
+
+const deleteUser = (id) => {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podras revertirlo!",
+        icon: 'warning',
+        confirmButtonText: 'Sí',
+        cancelButtonText: 'No',
+        showCancelButton: true,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(url + '/' + id, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Eliminación exitosa'
+                })
+            })
+        }
     })
 }
